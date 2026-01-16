@@ -23,6 +23,7 @@ export async function GET(req: Request) {
     returnTime: sp.get("returnTime")!,
     maxNumberOfStops: sp.get("maxNumberOfStops")!,
     priceRange: sp.get("priceRange")!,
+    includedAirlineCodes: sp.get("includedAirlineCodes")!,
   });
 
   return NextResponse.json(data);
