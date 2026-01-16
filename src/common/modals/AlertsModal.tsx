@@ -37,8 +37,7 @@ const AlertsModal = () => {
         <Box sx={{ pt: 2 }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Get notified when prices drop for flights from{" "}
-            {origin?.code || "your origin"} to{" "}
-            {destination?.code || "your destination"}.
+            {origin || "your origin"} to {destination || "your destination"}.
           </Typography>
 
           <TextField

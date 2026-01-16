@@ -1,20 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  Box,
-  Typography,
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-} from "@mui/material";
+import { Card, Box, Typography, Button, Divider } from "@mui/material";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useDrawer } from "@/src/hooks/useDrawer";
 
 type FlightCardProps = {

@@ -28,15 +28,12 @@ import PublicIcon from "@mui/icons-material/Public";
 import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatReclineNormal";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import DiamondIcon from "@mui/icons-material/Diamond";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-
-import { useModal } from "@/src/hooks/useModal";
 
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import TuneIcon from "@mui/icons-material/Tune";
 import { useDrawer } from "@/src/hooks/useDrawer";
 import { useHeader } from "@/src/hooks/useHeader";
-import Plane from "@/src/components/ui/icons/Plane";
+import Navbar from "./Navbar";
 
 const airports = [
   { label: "New York (JFK)", code: "JFK" },
@@ -57,7 +54,6 @@ const airports = [
 ];
 
 const Header = () => {
-  const { open: openModal } = useModal();
   const { open: openDrawer } = useDrawer();
   const {
     origin,
@@ -86,34 +82,12 @@ const Header = () => {
     totalPassengers,
     passengersOpen,
     handleSwapLocations,
+    handleExplore,
   } = useHeader();
   return (
     <>
       <div className="">
-        <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-white">
-            <div className="p-2 bg-[#4f46e5] rounded-lg text-white">
-              <Plane />
-            </div>
-            <span className="font-serif text-2xl font-bold tracking-wide">
-              Aero Search
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-white/90 text-sm font-medium">
-            <button
-              onClick={() =>
-                openModal("setAlert", {
-                  origin,
-                  destination,
-                })
-              }
-              className="flex items-center gap-2 px-5 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full hover:bg-white/30 transition-all"
-            >
-              <NotificationsIcon fontSize="small" />
-              Price Alerts
-            </button>
-          </div>
-        </nav>
+        <Navbar />
         <div className="relative md:h-[85vh] md:min-h-150 min-h-[120vh] w-full overflow-visible flex items-center justify-center">
           <div className="absolute inset-0 z-0">
             <Image
@@ -371,10 +345,7 @@ const Header = () => {
                     </MenuItem>
                   </Select>
                 </div>
-                <div
-                  suppressHydrationWarning
-                  className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 relative"
-                >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 relative">
                   <div className="grid col-span-2 grid-cols-2 gap-5 relative">
                     <Autocomplete
                       options={airports}
@@ -431,7 +402,6 @@ const Header = () => {
                       )}
                     />
 
-                    {/* Swap Button */}
                     <Button
                       onClick={handleSwapLocations}
                       sx={{
@@ -566,7 +536,13 @@ const Header = () => {
                 <Button
                   variant="contained"
                   size="large"
+                  // disabled={
+                  //   origin?.code === "" ||
+                  //   destination?.code === "" ||
+                  //   origin?.code === destination?.code
+                  // }
                   startIcon={<SearchIcon />}
+                  onClick={handleExplore}
                   sx={{
                     position: "absolute",
                     left: "50%",
@@ -587,6 +563,11 @@ const Header = () => {
                       boxShadow: "0 12px 24px rgba(99, 102, 241, 0.4)",
                     },
                     transition: "all 0.3s ease",
+                    "&:disabled": {
+                      bgcolor: "#4f46e5",
+                      opacity: 0.9,
+                      cursor: "not-allowed",
+                    },
                   }}
                 >
                   Explore

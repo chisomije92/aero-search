@@ -9,6 +9,8 @@ import ModalLayout from "./ModalLayout";
 import { DrawerProvider } from "@/src/providers/DrawerProvider";
 import DrawerLayout from "./DrawerLayout";
 import Footer from "@/src/common/extras/Footer";
+import { useIsMounted } from "@/src/hooks/useIsMounted";
+import { Toaster } from "mui-sonner";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,6 +18,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children, className }: MainLayoutProps) => {
+  useIsMounted();
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ModalProvider>
@@ -30,6 +33,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
           </ModalLayout>
         </DrawerProvider>
       </ModalProvider>
+      <Toaster />
     </LocalizationProvider>
   );
 };

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useModal } from "./useModal";
 
 interface IAlertsModal {
-  origin?: { label: string; code: string } | null;
-  destination: { label: string; code: string } | null;
+  origin?: string | null;
+  destination: string | null;
 }
 
 export const useAlertsModal = () => {

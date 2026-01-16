@@ -21,3 +21,11 @@ export function getCalendarDays(month: dayjs.Dayjs) {
 
   return days;
 }
+
+export function cleanRecord(
+  obj: Record<string, string>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value.trim() !== ""),
+  );
+}

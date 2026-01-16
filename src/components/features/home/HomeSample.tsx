@@ -175,7 +175,7 @@ const airports = [
   { label: "Amsterdam (AMS)", code: "AMS" },
 ];
 
-const Home = () => {
+const HomeSample = () => {
   const [origin, setOrigin] = useState<{ label: string; code: string } | null>(
     null
   );
@@ -711,7 +711,8 @@ const Home = () => {
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 ml-5">
-                      The least expensive flights for similar trips usually cost between $265–$450.
+                      The least expensive flights for similar trips usually cost
+                      between $265–$450.
                     </p>
                   </div>
                   <ResponsiveContainer width="100%" height={280}>
@@ -822,4 +823,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeSample;
