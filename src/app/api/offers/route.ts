@@ -6,43 +6,16 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const sp = new URL(req.url).searchParams;
-    console.log(sp);
-    const data = await amadeusGet(
-      "/v2/shopping/flight-offers",
-      {
-        originLocationCode: sp.get("originLocationCode")!,
-        destinationLocationCode: sp.get("destinationLocationCode")!,
-        departureDate: sp.get("departureDate")!,
-        returnDate: sp.get("returnDate")!,
-        adults: sp.get("adults")!,
-        max: sp.get("max")!,
-        // travelClass: sp.get("travelClass")!,
-        children: sp.get("children")!,
-        infants: sp.get("infants")!,
-        // seniors: sp.get("seniors")!,
-        // youth: sp.get("youth")!,
-        // currencyCode: sp.get("currencyCode")!,
-        // cabinClass: sp.get("cabinClass")!,
-        // maxNumberOfConnections: sp.get("maxNumberOfConnections")!,
-        // departureTime: sp.get("departureTime")!,
-        // returnTime: sp.get("returnTime")!,
-        // // maxNumberOfStops: sp.get("maxNumberOfStops")!,
-        // priceRange: sp.get("priceRange")!,
-        // includedAirlineCodes: sp.get("includedAirlineCodes")!,
-        // nonStop: sp.get("nonStop")!,
-        // oneWay: sp.get("tripType")! === "roundtrip" ? true : false,
-      },
-      // {
-      //   originLocationCode: "BCN",
-      //   destinationLocationCode: "CCU",
-      //   departureDate: "2026-01-17",
-      //   returnDate: "2026-01-23",
-      //   adults: "1",
-      //   children: 0,
-      //   max: 20,
-      //   travelClass: "ECONOMY",
-      // },
-    );
+    const data = await amadeusGet("/v2/shopping/flight-offers", {
+      originLocationCode: sp.get("originLocationCode")!,
+      destinationLocationCode: sp.get("destinationLocationCode")!,
+      departureDate: sp.get("departureDate")!,
+      returnDate: sp.get("returnDate")!,
+      adults: sp.get("adults")!,
+      max: sp.get("max")!,
+      children: sp.get("children")!,
+      infants: sp.get("infants")!,
+    });
 
     return NextResponse.json(data);
   } catch (error) {

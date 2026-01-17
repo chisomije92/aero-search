@@ -29,11 +29,12 @@ import DiamondIcon from "@mui/icons-material/Diamond";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import TuneIcon from "@mui/icons-material/Tune";
 import { useDrawer } from "@/src/hooks/useDrawer";
-import { useHeader } from "@/src/hooks/useHeader";
 import Navbar from "./Navbar";
 import { LocationAutocomplete } from "./LocationAutocomplete";
+import { useHeroActions } from "@/src/hooks/useHeroActions";
+import { AnimatedSection } from "@/src/components/ui/AnimationSection";
 
-const Header = () => {
+const Hero = () => {
   const { open: openDrawer } = useDrawer();
   const {
     origin,
@@ -52,8 +53,7 @@ const Header = () => {
     setAdults,
     children,
     setChildren,
-    // infantsLap,
-    // setInfantsLap,
+
     infantsSeat,
     setInfantsSeat,
     travelClass,
@@ -71,7 +71,7 @@ const Header = () => {
     handleChangeDestination,
     handleChangeOriginInput,
     handleChangeDestinationInput,
-  } = useHeader();
+  } = useHeroActions();
 
   const notEnoughTextAndLoadingText = hasNotTypedEnough
     ? "Type at least 1 characters"
@@ -80,10 +80,10 @@ const Header = () => {
       : "No locations found";
 
   return (
-    <>
+    <AnimatedSection>
       <div className="">
         <Navbar />
-        <div className="relative md:h-[85vh] md:min-h-150 min-h-[120vh] w-full overflow-visible flex items-center justify-center">
+        <div className="relative md:h-[85vh] md:min-h-200 min-h-[120vh] w-full overflow-visible flex items-center justify-center">
           <div className="absolute inset-0 z-0">
             <Image
               src="/images/flights.jpg"
@@ -96,7 +96,7 @@ const Header = () => {
             <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/60" />
           </div>
-          <div className="relative z-10 w-full max-w-4xl px-4 text-center">
+          <div className="relative z-10 w-full max-w-4xl px-4 text-center md:mt-0 mt-5">
             <span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-6 animate-fade-in-up">
               Discover Your Journey
             </span>
@@ -138,10 +138,6 @@ const Header = () => {
                           icon: <TrendingFlatIcon fontSize="small" />,
                           label: "One Way",
                         },
-                        // multicity: {
-                        //   icon: <PublicIcon fontSize="small" />,
-                        //   label: "Multi-City",
-                        // },
                       };
                       const selected = options[value as keyof typeof options];
                       return (
@@ -172,12 +168,6 @@ const Header = () => {
                           <TrendingFlatIcon fontSize="small" sx={{ mr: 1 }} />
                         ),
                       },
-                      // {
-                      //   id: 3,
-                      //   value: "multicity",
-                      //   label: "Multi-City",
-                      //   icon: <PublicIcon fontSize="small" sx={{ mr: 1 }} />,
-                      // },
                     ].map((option) => (
                       <MenuItem key={option.id} value={option.value}>
                         {option.icon} {option.label}
@@ -230,12 +220,7 @@ const Header = () => {
                             setter: setChildren,
                             min: 0,
                           },
-                          // {
-                          //   label: "Infants (on lap)",
-                          //   value: infantsLap,
-                          //   setter: setInfantsLap,
-                          //   min: 0,
-                          // },
+
                           {
                             label: "Infants (on seat)",
                             value: infantsSeat,
@@ -613,8 +598,8 @@ const Header = () => {
       >
         <TuneIcon />
       </Fab>
-    </>
+    </AnimatedSection>
   );
 };
 
-export default Header;
+export default Hero;

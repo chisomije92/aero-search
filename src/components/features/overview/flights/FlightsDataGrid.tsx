@@ -2,10 +2,14 @@ import { DataGrid, GridColDef, GridEventListener } from "@mui/x-data-grid";
 import { Paper } from "@mui/material";
 import { useGetOffers } from "@/src/hooks/useGetOffers";
 import { useDrawer } from "@/src/hooks/useDrawer";
+import { getFormattedDate } from "@/src/lib/dateHelper";
+import { useQueryParams } from "@/src/hooks/useQueryParams";
 
 const FlightsDataGrid = () => {
   const { normalizedDataOffers, isPending } = useGetOffers();
   const { open } = useDrawer();
+  const { getQueryParam } = useQueryParams();
+  const startDate = getQueryParam("startDate");
 
   const handleRowClick: GridEventListener<"rowClick"> = (params) => {
     open("selectFlight", params.row);
@@ -78,7 +82,8 @@ const FlightsDataGrid = () => {
   return (
     <Paper elevation={3} className="rounded-2xl overflow-hidden">
       <h3 className="text-xl font-bold text-black px-6 py-4">
-        Available Flights
+        {normalizedDataOffers?.length > 0 && normalizedDataOffers.length}{" "}
+        Available Flights for {getFormattedDate(new Date(startDate || ""))}
       </h3>
       <div className="h-200overflow-auto w-full">
         <DataGrid
@@ -115,6 +120,13 @@ const FlightsDataGrid = () => {
             "& .MuiDataGrid-columnHeaderTitle": {
               fontWeight: 700,
             },
+          }}
+          slots={{
+            noRowsOverlay: () => (
+              <h3 className="text-xl font-bold text-black px-6 py-4 flex justify-center">
+                No Flights Found
+              </h3>
+            ),
           }}
         />
       </div>

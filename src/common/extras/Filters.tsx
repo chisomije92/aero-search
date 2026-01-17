@@ -11,6 +11,7 @@ import {
   FormControl,
   Collapse,
   Button,
+  Skeleton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -18,7 +19,7 @@ import { useFilters } from "@/src/hooks/useFilters";
 import { useGetAirlines } from "@/src/hooks/useGetAirlines";
 
 const Filters = () => {
-  const { data: airlinesData } = useGetAirlines();
+  const { data: airlinesData, isPending } = useGetAirlines();
   const airlines = airlinesData?.data || [];
 
   const {
@@ -51,7 +52,6 @@ const Filters = () => {
 
   return (
     <div className="p-6">
-      {/* Reset Button */}
       <Button
         variant="outlined"
         size="small"
@@ -85,37 +85,46 @@ const Filters = () => {
           )}
         </div>
         <Collapse in={airlinesOpen}>
-          <FormGroup className="">
-            {airlines.map((airline) => (
-              <FormControlLabel
-                key={airline?.iataCode}
-                control={
-                  <Checkbox
-                    checked={selectedAirlines.includes(airline?.iataCode)}
-                    onChange={() => handleAirlineToggle(airline?.iataCode)}
-                    size="small"
-                    sx={{
-                      "&.Mui-checked": { color: "#6366f1" },
-                      "&:hover": {
-                        bgcolor: "rgba(99, 102, 241, 0.04)",
-                      },
-                    }}
+          <FormGroup>
+            {isPending
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-2 py-1">
+                    <Skeleton variant="rectangular" width={16} height={16} />
+                    <Skeleton variant="text" width={140} height={18} />
+                  </div>
+                ))
+              : airlines.map((airline) => (
+                  <FormControlLabel
+                    key={airline?.iataCode}
+                    control={
+                      <Checkbox
+                        checked={selectedAirlines.includes(airline?.iataCode)}
+                        onChange={() => handleAirlineToggle(airline?.iataCode)}
+                        size="small"
+                        sx={{
+                          "&.Mui-checked": { color: "#6366f1" },
+                          "&:hover": {
+                            bgcolor: "rgba(99, 102, 241, 0.04)",
+                          },
+                        }}
+                      />
+                    }
+                    label={
+                      <span className="text-sm text-gray-700">
+                        {airline?.commonName ??
+                          airline?.businessName ??
+                          airline?.iataCode}
+                      </span>
+                    }
                   />
-                }
-                label={
-                  <span className="text-sm text-gray-700">
-                    {airline?.commonName ??
-                      airline?.businessName ??
-                      airline?.iataCode}
-                  </span>
-                }
-              />
-            ))}
+                ))}
+            {!isPending && airlines.length === 0 && (
+              <p className="text-sm text-gray-500">No airlines available</p>
+            )}
           </FormGroup>
         </Collapse>
       </div>
 
-      {/* Price Range */}
       <div className="mb-6">
         <div
           className="flex items-center justify-between cursor-pointer mb-4"
@@ -162,7 +171,6 @@ const Filters = () => {
         </Collapse>
       </div>
 
-      {/* Stops */}
       <div className="mb-6">
         <div
           className="flex items-center justify-between cursor-pointer mb-3"
@@ -181,18 +189,38 @@ const Filters = () => {
           <FormControl fullWidth size="small">
             <Select
               value={maxStops}
-              onChange={(e) => handleMaxStopsChange(e.target.value as number)}
+              onChange={(e) =>
+                handleMaxStopsChange(e.target.value as number | string)
+              }
               sx={{ borderRadius: 2 }}
             >
-              <MenuItem value={0}>Non-stop</MenuItem>
-              <MenuItem value={1}>1 stop or less</MenuItem>
-              <MenuItem value={2}>2 stops or less</MenuItem>
+              {[
+                {
+                  value: "all",
+                  label: "Any number of stops",
+                },
+                {
+                  value: 0,
+                  label: "Non-stop",
+                },
+                {
+                  value: 1,
+                  label: "1 stop or less",
+                },
+                {
+                  value: 2,
+                  label: "2 stops or less",
+                },
+              ].map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Collapse>
       </div>
 
-      {/* Departure Time */}
       <div className="mb-6">
         <div
           className="flex items-center justify-between cursor-pointer mb-4"

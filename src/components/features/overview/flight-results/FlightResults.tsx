@@ -7,10 +7,11 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Filters from "@/src/common/extras/Filters";
 import PriceTrends from "../price-trends/PriceTrends";
 import FlightsDataGrid from "../flights/FlightsDataGrid";
+import { AnimatedSection } from "@/src/components/ui/AnimationSection";
 
 const FlightResults = () => {
   return (
-    <>
+    <AnimatedSection>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-6">
           <aside className="lg:w-72 shrink-0 hidden lg:block">
@@ -34,7 +35,7 @@ const FlightResults = () => {
           </main>
         </div>
       </div>
-    </>
+    </AnimatedSection>
   );
 };
 

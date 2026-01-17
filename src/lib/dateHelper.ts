@@ -1,3 +1,12 @@
+export function getFormattedDate(date = new Date()): string {
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export const formatTime = (dateTime: string) =>
   new Date(dateTime).toLocaleTimeString([], {
     hour: "2-digit",

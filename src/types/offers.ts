@@ -3,6 +3,7 @@ import { IMeta } from "./meta";
 export interface IAmadeusFlightOffer {
   id: string;
   numberOfBookableSeats: number;
+  oneWay: boolean;
   price: {
     currency: string;
     grandTotal: string;
@@ -73,6 +74,7 @@ export interface INormalizedFlightOffer {
   return?: IFlightLeg;
   numberOfBookableSeats: number;
   travelClass: TTravelClass;
+  isOneWay: boolean;
 }
 
 export type TTripType = "ONE_WAY" | "ROUND_TRIP";

@@ -21,8 +21,13 @@ const SelectFlightDrawer = () => {
     return null;
   }
 
-  const { outbound, return: returnFlight, currency, price, isRoundTrip } =
-    drawerData;
+  const {
+    outbound,
+    return: returnFlight,
+    currency,
+    price,
+    isRoundTrip,
+  } = drawerData;
 
   return (
     <Drawer anchor="right" open={openState.isOpen} onClose={() => close()}>
@@ -43,7 +48,6 @@ const SelectFlightDrawer = () => {
           </IconButton>
         </Box>
 
-        {/* Outbound Flight */}
         <Box sx={{ mb: 3, p: 2, bgcolor: "#f9fafb", borderRadius: 2 }}>
           <Typography fontWeight={700} fontSize={18} color="#1f2937" mb={1}>
             {outbound.airline}
@@ -94,7 +98,6 @@ const SelectFlightDrawer = () => {
           </Box>
         </Box>
 
-        {/* Return Flight (if round trip) */}
         {isRoundTrip && returnFlight && (
           <>
             <Divider sx={{ my: 3 }} />
@@ -109,7 +112,9 @@ const SelectFlightDrawer = () => {
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+              >
                 <FlightTakeoffIcon sx={{ color: "#6366f1" }} />
                 <Box>
                   <Typography fontWeight={600}>Departure</Typography>
@@ -137,7 +142,9 @@ const SelectFlightDrawer = () => {
                 </Typography>
               </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}
+              >
                 <FlightLandIcon sx={{ color: "#ec4899" }} />
                 <Box>
                   <Typography fontWeight={600}>Arrival</Typography>
@@ -155,7 +162,6 @@ const SelectFlightDrawer = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        {/* Price Summary */}
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography fontWeight={700} fontSize={18}>

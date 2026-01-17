@@ -11,7 +11,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 
 const AlertsModal = () => {
   const {
@@ -21,7 +20,6 @@ const AlertsModal = () => {
     weeklySummary,
     modalData,
     close,
-    open,
     setAlertEmail,
     setTargetPrice,
     setWeeklySummary,
@@ -59,7 +57,7 @@ const AlertsModal = () => {
             slotProps={{
               input: {
                 startAdornment: (
-                  <Box sx={{ mr: 1, color: "text.secondary" }}>$</Box>
+                  <Box sx={{ mr: 1, color: "text.secondary" }}></Box>
                 ),
               },
             }}

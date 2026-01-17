@@ -24,7 +24,7 @@ const DEFAULT_HEADER = {
   travelClass: "ECONOMY",
 };
 
-export const useHeader = () => {
+export const useHeroActions = () => {
   const { getQueryParam, setMultipleQueryParams, setQueryParam } =
     useQueryParams();
 
@@ -135,12 +135,10 @@ export const useHeader = () => {
 
   const setOrigin = useCallback((value: ILocation | null) => {
     setOriginState(value);
-    // setQueryParam("origin", value?.code || null);
   }, []);
 
   const setDestination = useCallback((value: ILocation | null) => {
     setDestinationState(value);
-    // setQueryParam("destination", value?.code || null);
   }, []);
 
   const setStartDate = useCallback((value: Dayjs | null) => {
@@ -220,7 +218,6 @@ export const useHeader = () => {
       tripType,
       adults: adults.toString(),
       children: children.toString(),
-      // infantsLap: infantsLap.toString(),
       infantsSeat: infantsSeat.toString(),
       travelClass,
     };
@@ -268,7 +265,6 @@ export const useHeader = () => {
     tripType,
     adults,
     children,
-    // infantsLap,
     infantsSeat,
     travelClass,
     originSearchInput,

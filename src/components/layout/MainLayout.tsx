@@ -9,7 +9,6 @@ import ModalLayout from "./ModalLayout";
 import { DrawerProvider } from "@/src/providers/DrawerProvider";
 import DrawerLayout from "./DrawerLayout";
 import Footer from "@/src/common/extras/Footer";
-import { useIsMounted } from "@/src/hooks/useIsMounted";
 import { Toaster } from "mui-sonner";
 import { NoSSR } from "@/src/providers/NoSSR";
 
@@ -19,7 +18,6 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children, className }: MainLayoutProps) => {
-  useIsMounted();
   return (
     <NoSSR>
       <LocalizationProvider dateAdapter={AdapterDayjs}>

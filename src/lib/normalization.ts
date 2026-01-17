@@ -58,5 +58,6 @@ export function normalizeFlightOffer(
     outbound,
     return: returnLeg,
     travelClass: extractTravelClass(offer),
+    isOneWay: offer.oneWay,
   };
 }

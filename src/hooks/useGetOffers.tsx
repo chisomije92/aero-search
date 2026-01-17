@@ -12,8 +12,6 @@ import { normalizeFlightOffer } from "../lib/normalization";
 import { filterFlights } from "../lib/filters";
 import { useMemo } from "react";
 import {
-  buildDateRange,
-  buildPastDayOffsets,
   buildPriceProfile,
   buildSpacedDayOffsets,
   priceForDay,
@@ -23,6 +21,11 @@ export const useGetOffers = () => {
   const { getQueryParam } = useQueryParams();
   const origin = getQueryParam("origin");
   const destination = getQueryParam("destination");
+  const tripType =
+    getQueryParam("tripType") === "roundtrip"
+      ? "ROUND_TRIP"
+      : ("ONE_WAY" as TTripType);
+
   const paramsObj = {
     originLocationCode: origin,
     destinationLocationCode: destination,
@@ -33,7 +36,7 @@ export const useGetOffers = () => {
 
   const clientFilters = {
     departureDate: getQueryParam("startDate") || "",
-    returnDate: getQueryParam("endDate") || "",
+    returnDate: tripType !== "ROUND_TRIP" ? "" : getQueryParam("endDate") || "",
     departureTime: getQueryParam("departureTime") || "",
     returnTime: getQueryParam("arrivalTime") || "",
     maxNumberOfStops: getQueryParam("maxStops")
@@ -49,10 +52,7 @@ export const useGetOffers = () => {
       Number(getQueryParam("children")) +
       Number(getQueryParam("infants")) +
       Number(getQueryParam("infantsSeat")),
-    tripType:
-      getQueryParam("tripType") === "roundtrip"
-        ? "ROUND_TRIP"
-        : ("ONE_WAY" as TTripType),
+    tripType: tripType,
   };
   const queryString = toQueryString(paramsObj);
 
@@ -74,31 +74,6 @@ export const useGetOffers = () => {
       };
     },
   });
-
-  // const priceTrendData = useMemo(() => {
-  //   const map = new Map<string, { price: number; currency: string }>();
-
-  //   query.data?.normalizedDataOffers.forEach((flight) => {
-  //     const date = flight.outbound.departureDate.split("T")[0];
-
-  //     const existing = map.get(date);
-
-  //     if (!existing || flight.price < existing.price) {
-  //       map.set(date, {
-  //         price: flight.price,
-  //         currency: flight.currency,
-  //       });
-  //     }
-  //   });
-
-  //   return Array.from(map.entries())
-  //     .map(([date, value]) => ({
-  //       date,
-  //       price: value.price,
-  //       currency: value.currency,
-  //     }))
-  //     .sort((a, b) => a.date.localeCompare(b.date));
-  // }, [query.data?.normalizedDataOffers]);
 
   const simulatedTrendData = useMemo(() => {
     if (!query.data?.normalizeFlightOffers.length) return [];

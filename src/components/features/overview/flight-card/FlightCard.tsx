@@ -78,7 +78,6 @@ export default function FlightCard({
             </Typography>
           </Box>
 
-          {/* Flight Times */}
           <Box
             sx={{
               flex: { md: 5 },

@@ -1,13 +1,8 @@
 import { IFlightFilters, INormalizedFlightOffer } from "../types/offers";
 import {
-  extractHourFromISO,
   extractMinutesFromISO,
-  getHourFromISO,
   isWithinPrice,
-  isWithinTime,
-  parseHourRange,
   parseHourRangeToMinutes,
-  timeStringToHour,
 } from "./dateHelper";
 
 function parseStops(stopsString: string): number {
@@ -38,7 +33,7 @@ export function filterFlights(
       bookableSeats,
     } = filters;
 
-    if (tripType === "ONE_WAY" && flight.isRoundTrip) {
+    if (tripType === "ONE_WAY" && !flight.isOneWay) {
       return false;
     }
 
@@ -46,7 +41,7 @@ export function filterFlights(
       return false;
     }
 
-    if (departureDate && flight.outbound.departureDate !== departureDate) {
+    if (departureDate && !flight.return) {
       return false;
     }
 
@@ -60,7 +55,6 @@ export function filterFlights(
     }
 
     if (travelClass && flight.travelClass !== travelClass) {
-      console.log("travelClass", travelClass);
       return false;
     }
 
