@@ -4,11 +4,9 @@ import Image from "next/image";
 import {
   Select,
   MenuItem,
-  TextField,
   Button,
   Box,
   Paper,
-  Autocomplete,
   IconButton,
   Popover,
   Fab,
@@ -34,32 +32,17 @@ import TuneIcon from "@mui/icons-material/Tune";
 import { useDrawer } from "@/src/hooks/useDrawer";
 import { useHeader } from "@/src/hooks/useHeader";
 import Navbar from "./Navbar";
-
-const airports = [
-  { label: "New York (JFK)", code: "JFK" },
-  { label: "Los Angeles (LAX)", code: "LAX" },
-  { label: "London (LHR)", code: "LHR" },
-  { label: "Paris (CDG)", code: "CDG" },
-  { label: "Tokyo (NRT)", code: "NRT" },
-  { label: "Dubai (DXB)", code: "DXB" },
-  { label: "Singapore (SIN)", code: "SIN" },
-  { label: "Hong Kong (HKG)", code: "HKG" },
-  { label: "Chicago (ORD)", code: "ORD" },
-  { label: "San Francisco (SFO)", code: "SFO" },
-  { label: "Miami (MIA)", code: "MIA" },
-  { label: "Toronto (YYZ)", code: "YYZ" },
-  { label: "Sydney (SYD)", code: "SYD" },
-  { label: "Frankfurt (FRA)", code: "FRA" },
-  { label: "Amsterdam (AMS)", code: "AMS" },
-];
+import { LocationAutocomplete } from "./LocationAutocomplete";
 
 const Header = () => {
   const { open: openDrawer } = useDrawer();
   const {
     origin,
-    setOrigin,
     destination,
-    setDestination,
+    originLocations,
+    destinationLocations,
+    originSearchInput,
+    destinationSearchInput,
     startDate,
     setStartDate,
     endDate,
@@ -81,9 +64,22 @@ const Header = () => {
     isSwapped,
     totalPassengers,
     passengersOpen,
+    isSearching,
+    hasNotTypedEnough,
     handleSwapLocations,
     handleExplore,
+    handleChangeOrigin,
+    handleChangeDestination,
+    handleChangeOriginInput,
+    handleChangeDestinationInput,
   } = useHeader();
+
+  const notEnoughTextAndLoadingText = hasNotTypedEnough
+    ? "Type at least 1 characters"
+    : isSearching
+      ? "Searching airports…"
+      : "No locations found";
+
   return (
     <>
       <div className="">
@@ -385,59 +381,51 @@ const Header = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 relative">
                   <div className="grid col-span-2 grid-cols-2 gap-5 relative">
-                    <Autocomplete
-                      options={airports}
-                      value={isSwapped ? destination : origin}
-                      onChange={(_, newValue) =>
-                        isSwapped
-                          ? setDestination(newValue)
-                          : setOrigin(newValue)
+                    <LocationAutocomplete
+                      options={
+                        isSwapped ? destinationLocations : originLocations
                       }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={isSwapped ? "To" : "From"}
-                          placeholder={isSwapped ? "Where to" : "Where from"}
-                          slotProps={{
-                            input: {
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  {isSwapped ? (
-                                    <FlightLandIcon
-                                      sx={{
-                                        color: "#ec4899",
-                                        mr: 1.5,
-                                        ml: 1,
-                                      }}
-                                    />
-                                  ) : (
-                                    <FlightTakeoffIcon
-                                      sx={{
-                                        color: "#6366f1",
-                                        mr: 1.5,
-                                        ml: 1,
-                                      }}
-                                    />
-                                  )}
-                                  {params.InputProps.startAdornment}
-                                </>
-                              ),
-                            },
-                          }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 2,
-                              "&:hover fieldset": {
-                                borderColor: isSwapped ? "#ec4899" : "#6366f1",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: isSwapped ? "#ec4899" : "#6366f1",
-                              },
-                            },
-                          }}
-                        />
-                      )}
+                      label={isSwapped ? "To" : "From"}
+                      placeholder={isSwapped ? "Where to" : "Where from"}
+                      inputValue={
+                        isSwapped ? destinationSearchInput : originSearchInput
+                      }
+                      value={isSwapped ? destination : origin}
+                      loading={isSearching}
+                      loadingText={"Searching airports…"}
+                      noOptionsText={notEnoughTextAndLoadingText}
+                      onChange={handleChangeOrigin}
+                      onInputChange={handleChangeOriginInput}
+                      icon={
+                        isSwapped ? (
+                          <FlightLandIcon
+                            sx={{
+                              color: "#ec4899",
+                              mr: 1.5,
+                              ml: 1,
+                            }}
+                          />
+                        ) : (
+                          <FlightTakeoffIcon
+                            sx={{
+                              color: "#6366f1",
+                              mr: 1.5,
+                              ml: 1,
+                            }}
+                          />
+                        )
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          "&:hover fieldset": {
+                            borderColor: isSwapped ? "#ec4899" : "#6366f1",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: isSwapped ? "#ec4899" : "#6366f1",
+                          },
+                        },
+                      }}
                     />
 
                     <Button
@@ -467,59 +455,51 @@ const Header = () => {
                       <SwapHorizIcon sx={{ color: "#6366f1" }} />
                     </Button>
 
-                    <Autocomplete
-                      options={airports}
-                      value={isSwapped ? origin : destination}
-                      onChange={(_, newValue) =>
-                        isSwapped
-                          ? setOrigin(newValue)
-                          : setDestination(newValue)
+                    <LocationAutocomplete
+                      options={
+                        isSwapped ? originLocations : destinationLocations
                       }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={isSwapped ? "From" : "To"}
-                          placeholder={isSwapped ? "Where from" : "Where to"}
-                          slotProps={{
-                            input: {
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  {isSwapped ? (
-                                    <FlightTakeoffIcon
-                                      sx={{
-                                        color: "#6366f1",
-                                        mr: 1.5,
-                                        ml: 1,
-                                      }}
-                                    />
-                                  ) : (
-                                    <FlightLandIcon
-                                      sx={{
-                                        color: "#ec4899",
-                                        mr: 1.5,
-                                        ml: 1,
-                                      }}
-                                    />
-                                  )}
-                                  {params.InputProps.startAdornment}
-                                </>
-                              ),
-                            },
-                          }}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              borderRadius: 2,
-                              "&:hover fieldset": {
-                                borderColor: isSwapped ? "#6366f1" : "#ec4899",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: isSwapped ? "#6366f1" : "#ec4899",
-                              },
-                            },
-                          }}
-                        />
-                      )}
+                      value={isSwapped ? origin : destination}
+                      inputValue={
+                        isSwapped ? originSearchInput : destinationSearchInput
+                      }
+                      loading={isSearching}
+                      loadingText={"Searching airports…"}
+                      noOptionsText={notEnoughTextAndLoadingText}
+                      label={isSwapped ? "From" : "To"}
+                      placeholder={isSwapped ? "Where from" : "Where to"}
+                      onChange={handleChangeDestination}
+                      onInputChange={handleChangeDestinationInput}
+                      icon={
+                        isSwapped ? (
+                          <FlightTakeoffIcon
+                            sx={{
+                              color: "#6366f1",
+                              mr: 1.5,
+                              ml: 1,
+                            }}
+                          />
+                        ) : (
+                          <FlightLandIcon
+                            sx={{
+                              color: "#ec4899",
+                              mr: 1.5,
+                              ml: 1,
+                            }}
+                          />
+                        )
+                      }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          "&:hover fieldset": {
+                            borderColor: isSwapped ? "#6366f1" : "#ec4899",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: isSwapped ? "#6366f1" : "#ec4899",
+                          },
+                        },
+                      }}
                     />
                   </div>
                   <div className="flex gap-1">

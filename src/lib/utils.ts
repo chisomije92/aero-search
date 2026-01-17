@@ -11,7 +11,7 @@ export function getCalendarDays(month: dayjs.Dayjs) {
 
   const startDate = startOfMonth.startOf("week"); // Sunday
 
-  const days = [];
+  const days: dayjs.Dayjs[] = [];
   let current = startDate;
 
   for (let i = 0; i < 49; i++) {

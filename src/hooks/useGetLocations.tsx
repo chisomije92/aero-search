@@ -13,5 +13,6 @@ export const useGetLocations = (keywords: string = "") => {
     queryFn: async () => await getLocations(cleanRecord(paramsObj)),
     queryKey: [...QUERY_KEYS.getLocationsKey(queryString)],
     enabled: !!keywords,
+    // placeholderData: (previousData) => previousData,
   });
 };

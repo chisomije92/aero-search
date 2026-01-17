@@ -17,8 +17,8 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(data);
-  } catch (error) {
-    const customError = error as IError;
-    customErrorHelper(customError);
-  }
+   } catch (error) {
+     const customError = error as IError;
+     return customErrorHelper(customError);
+   }
 }

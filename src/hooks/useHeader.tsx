@@ -4,6 +4,12 @@ import dayjs from "dayjs";
 import { useQueryParams } from "./useQueryParams";
 import { toast } from "mui-sonner";
 import { useGetLocations } from "./useGetLocations";
+import { useDebounce } from "./useDebounce";
+import { ILocation } from "@/src/types/locations";
+import {
+  AutocompleteChangeReason,
+  AutocompleteInputChangeReason,
+} from "@mui/material";
 
 const airports = [
   { label: "New York (JFK)", code: "JFK" },
@@ -24,8 +30,8 @@ const airports = [
 ];
 
 const DEFAULT_HEADER = {
-  origin: null as { label: string; code: string } | null,
-  destination: null as { label: string; code: string } | null,
+  origin: null as ILocation | null,
+  destination: null as ILocation | null,
   startDate: null as Dayjs | null,
   endDate: null as Dayjs | null,
   tripType: "roundtrip",
@@ -40,31 +46,56 @@ export const useHeader = () => {
   const { getQueryParam, setMultipleQueryParams, setQueryParam } =
     useQueryParams();
 
-  const [origin, setOriginState] = useState<{
-    label: string;
-    code: string;
-  } | null>(() => {
+  // const { originSearchInput, setOriginSearchInput } = useSearch("");
+  // const [destinationSearchInput, setDestinationSearchInput] = useState("");
+
+  const [originSearchInput, setOriginSearchInput] = useState("");
+  const [destinationSearchInput, setDestinationSearchInput] = useState("");
+
+  const debouncedOriginSearch = useDebounce(originSearchInput, 300);
+  const debouncedDestinationSearch = useDebounce(destinationSearchInput, 300);
+
+  const {
+    data: originLocationsResponse,
+    isPending: isSearchingOrigins,
+    isFetching: isFetchingOrigins,
+    // isLoading: isLoadingOrigins,
+  } = useGetLocations(debouncedOriginSearch);
+  const {
+    data: destinationLocationsResponse,
+    isPending: isSearchingDestinations,
+    isFetching: isFetchingDestinations,
+    // isLoading: isLoadingDestinations,
+  } = useGetLocations(debouncedDestinationSearch);
+
+  const originLocations = useMemo(() => {
+    if (!originLocationsResponse?.data) return [];
+    return originLocationsResponse.data;
+  }, [originLocationsResponse]);
+
+  const destinationLocations = useMemo(() => {
+    if (!destinationLocationsResponse?.data) return [];
+    return destinationLocationsResponse.data;
+  }, [destinationLocationsResponse]);
+
+  const [origin, setOriginState] = useState<ILocation | null>(() => {
     const originCode = getQueryParam("origin");
     if (originCode) {
-      return airports.find((a) => a.code === originCode) || null;
+      return originLocations.find((a) => a.iataCode === originCode) || null;
     }
     return DEFAULT_HEADER.origin;
   });
 
-  const [destination, setDestinationState] = useState<{
-    label: string;
-    code: string;
-  } | null>(() => {
+  const [destination, setDestinationState] = useState<ILocation | null>(() => {
     const destinationCode = getQueryParam("destination");
     if (destinationCode) {
-      return airports.find((a) => a.code === destinationCode) || null;
+      return (
+        destinationLocations.find((a) => a.iataCode === destinationCode) || null
+      );
     }
     return DEFAULT_HEADER.destination;
   });
 
-  const { data: originLocations } = useGetLocations(origin?.code);
-  const { data: destinationLocations } = useGetLocations();
-  console.log("originLocations", originLocations);
   const [startDate, setStartDateState] = useState<Dayjs | null>(() => {
     const startDateStr = getQueryParam("startDate");
     if (startDateStr) {
@@ -119,21 +150,15 @@ export const useHeader = () => {
   );
   const [isSwapped, setIsSwapped] = useState(false);
 
-  const setOrigin = useCallback(
-    (value: { label: string; code: string } | null) => {
-      setOriginState(value);
-      // setQueryParam("origin", value?.code || null);
-    },
-    [],
-  );
+  const setOrigin = useCallback((value: ILocation | null) => {
+    setOriginState(value);
+    // setQueryParam("origin", value?.code || null);
+  }, []);
 
-  const setDestination = useCallback(
-    (value: { label: string; code: string } | null) => {
-      setDestinationState(value);
-      // setQueryParam("destination", value?.code || null);
-    },
-    [],
-  );
+  const setDestination = useCallback((value: ILocation | null) => {
+    setDestinationState(value);
+    // setQueryParam("destination", value?.code || null);
+  }, []);
 
   const setStartDate = useCallback((value: Dayjs | null) => {
     setStartDateState(value);
@@ -203,8 +228,8 @@ export const useHeader = () => {
 
   const handleExplore = useCallback(() => {
     const params: Record<string, string | null> = {
-      origin: origin?.code || null,
-      destination: destination?.code || null,
+      origin: origin?.iataCode || null,
+      destination: destination?.iataCode || null,
       startDate: startDate ? startDate.format("YYYY-MM-DD") : null,
       endDate: endDate ? endDate.format("YYYY-MM-DD") : null,
       tripType,
@@ -219,8 +244,19 @@ export const useHeader = () => {
       toast.warning("Please select an origin airport.");
       return;
     }
+
     if (!params?.destination) {
       toast.warning("Please select a destination airport.");
+      return;
+    }
+
+    if (!params?.startDate) {
+      toast.warning("Please select a start date.");
+      return;
+    }
+
+    if (!params?.endDate) {
+      toast.warning("Please select an end date.");
       return;
     }
 
@@ -238,6 +274,69 @@ export const useHeader = () => {
     travelClass,
     setMultipleQueryParams,
   ]);
+  const handleChangeOrigin = useCallback(
+    (newValue: ILocation | null, reason: AutocompleteChangeReason) => {
+      if (reason === "clear") {
+        setOrigin(null);
+        setOriginSearchInput("");
+      }
+      if (!newValue) return;
+      if (isSwapped) {
+        setDestination(newValue);
+        setDestinationSearchInput(newValue.name);
+      } else {
+        setOrigin(newValue);
+        setOriginSearchInput(newValue.name);
+      }
+    },
+    [isSwapped, setDestination, setOrigin],
+  );
+
+  const handleChangeDestination = useCallback(
+    (newValue: ILocation | null, reason: AutocompleteChangeReason) => {
+      if (reason === "clear") {
+        setDestination(null);
+        setDestinationSearchInput("");
+      }
+      if (!newValue) return;
+      if (isSwapped) {
+        setOrigin(newValue);
+        setOriginSearchInput(newValue.name);
+      } else {
+        setDestination(newValue);
+        setDestinationSearchInput(newValue.name);
+      }
+    },
+    [isSwapped, setDestination, setOrigin],
+  );
+
+  const handleChangeOriginInput = useCallback(
+    (newValue: string, reason: AutocompleteInputChangeReason) => {
+      if (reason === "input") {
+        if (isSwapped) {
+          setDestinationSearchInput(newValue);
+        } else {
+          setOriginSearchInput(newValue);
+        }
+      }
+    },
+    [isSwapped],
+  );
+
+  const handleChangeDestinationInput = useCallback(
+    (newValue: string, reason: AutocompleteInputChangeReason) => {
+      if (reason === "input") {
+        if (isSwapped) {
+          setOriginSearchInput(newValue);
+        } else {
+          setDestinationSearchInput(newValue);
+        }
+      }
+    },
+    [isSwapped],
+  );
+
+  const isSearching = isFetchingDestinations || isFetchingOrigins;
 
   return useMemo(
     () => ({
@@ -245,6 +344,12 @@ export const useHeader = () => {
       setOrigin,
       destination,
       setDestination,
+      originLocations,
+      destinationLocations,
+      originSearchInput,
+      setOriginSearchInput,
+      destinationSearchInput,
+      setDestinationSearchInput,
       startDate,
       setStartDate,
       endDate,
@@ -269,10 +374,26 @@ export const useHeader = () => {
       passengersOpen,
       handleSwapLocations,
       handleExplore,
+      handleChangeOrigin,
+      handleChangeDestination,
+      handleChangeOriginInput,
+      handleChangeDestinationInput,
+      loadingLocations: isSearchingOrigins || isSearchingDestinations,
+
+      hasNotTypedEnough:
+        (isSwapped ? originSearchInput : destinationSearchInput).length < 1,
+      isSearching,
+      noResults:
+        (isFetchingDestinations || isFetchingOrigins) &&
+        (isSwapped ? originLocations : destinationLocations).length === 0,
     }),
     [
       origin,
       destination,
+      originLocations,
+      destinationLocations,
+      originSearchInput,
+      destinationSearchInput,
       startDate,
       endDate,
       tripType,
@@ -285,6 +406,11 @@ export const useHeader = () => {
       isSwapped,
       totalPassengers,
       passengersOpen,
+      isSearchingOrigins,
+      isSearchingDestinations,
+      isFetchingDestinations,
+      isFetchingOrigins,
+      isSearching,
       setAdults,
       setChildren,
       setInfantsLap,
@@ -292,11 +418,17 @@ export const useHeader = () => {
       setTravelClass,
       setOrigin,
       setDestination,
+      setOriginSearchInput,
+      setDestinationSearchInput,
       setStartDate,
       setEndDate,
       setTripType,
       handleSwapLocations,
       handleExplore,
+      handleChangeOrigin,
+      handleChangeDestination,
+      handleChangeOriginInput,
+      handleChangeDestinationInput,
     ],
   );
 };
