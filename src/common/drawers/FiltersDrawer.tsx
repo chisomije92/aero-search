@@ -3,8 +3,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useDrawer } from "@/src/hooks/useDrawer";
 import Filters from "../extras/Filters";
 
-const airlines = ["Delta", "United", "American", "Southwest", "JetBlue"];
-
 const FiltersDrawer = () => {
   const { openState, close } = useDrawer();
   return (
@@ -32,7 +30,7 @@ const FiltersDrawer = () => {
           </IconButton>
         </Box>
         <Box sx={{ p: 3 }}>
-          <Filters airlines={airlines} />
+          <Filters />
         </Box>
       </Box>
     </Drawer>
