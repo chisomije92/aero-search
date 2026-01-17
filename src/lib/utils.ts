@@ -23,9 +23,30 @@ export function getCalendarDays(month: dayjs.Dayjs) {
 }
 
 export function cleanRecord(
-  obj: Record<string, string>,
+  obj: Record<string, string | null | undefined>,
 ): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, value]) => value.trim() !== ""),
+  const entries = Object.entries(obj).filter(
+    (entry): entry is [string, string] =>
+      typeof entry[1] === "string" && entry[1].trim() !== "",
   );
+
+  return Object.fromEntries(entries) as Record<string, string>;
+}
+
+export function toQueryString(
+  obj?: Record<string, string | null | undefined>,
+): string {
+  if (!obj) return "";
+  return Object.entries(obj)
+    .map(([key, value]) =>
+      value === null || value === undefined || value === ""
+        ? null
+        : [key, value],
+    )
+    .filter((item): item is [string, string] => item !== null)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+    )
+    .join("&");
 }

@@ -1,0 +1,24 @@
+import { amadeusGet } from "@/src/lib/amadeus/client";
+import { customErrorHelper } from "@/src/lib/errorHelper";
+import { IError } from "@/src/types/error";
+import { NextResponse } from "next/server";
+
+export async function GET(req: Request) {
+  try {
+    const sp = new URL(req.url).searchParams;
+
+    const data = await amadeusGet("/v1/analytics/itinerary-price-metrics", {
+      originLocationCode: sp.get("origin")!,
+      destinationIataCode: sp.get("destination")!,
+      departureDate: sp.get("month")!,
+      oneWay: sp.get("oneWay")!,
+      travelClass: sp.get("travelClass")!,
+      currencyCode: sp.get("currency")!,
+    });
+
+    return NextResponse.json(data);
+  } catch (error) {
+    const customError = error as IError;
+    customErrorHelper(customError);
+  }
+}

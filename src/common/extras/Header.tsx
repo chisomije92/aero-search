@@ -162,16 +162,32 @@ const Header = () => {
                       );
                     }}
                   >
-                    <MenuItem value="roundtrip">
-                      <SyncAltIcon fontSize="small" sx={{ mr: 1 }} /> Round Trip
-                    </MenuItem>
-                    <MenuItem value="oneway">
-                      <TrendingFlatIcon fontSize="small" sx={{ mr: 1 }} /> One
-                      Way
-                    </MenuItem>
-                    <MenuItem value="multicity">
-                      <PublicIcon fontSize="small" sx={{ mr: 1 }} /> Multi-City
-                    </MenuItem>
+                    {[
+                      {
+                        id: 1,
+                        value: "roundtrip",
+                        label: "Round Trip",
+                        icon: <SyncAltIcon fontSize="small" sx={{ mr: 1 }} />,
+                      },
+                      {
+                        id: 2,
+                        value: "oneway",
+                        label: "One Way",
+                        icon: (
+                          <TrendingFlatIcon fontSize="small" sx={{ mr: 1 }} />
+                        ),
+                      },
+                      {
+                        id: 3,
+                        value: "multicity",
+                        label: "Multi-City",
+                        icon: <PublicIcon fontSize="small" sx={{ mr: 1 }} />,
+                      },
+                    ].map((option) => (
+                      <MenuItem key={option.id} value={option.value}>
+                        {option.icon} {option.label}
+                      </MenuItem>
+                    ))}
                   </Select>
 
                   <Box>
@@ -299,19 +315,22 @@ const Header = () => {
                     }}
                     renderValue={(value) => {
                       const options = {
-                        economy: {
+                        ECONOMY: {
                           icon: (
                             <AirlineSeatReclineNormalIcon fontSize="small" />
                           ),
                           label: "Economy",
+                          value: "ECONOMY",
                         },
-                        business: {
+                        BUSINESS: {
                           icon: <BusinessCenterIcon fontSize="small" />,
                           label: "Business",
+                          value: "BUSINESS",
                         },
-                        first: {
+                        FIRST: {
                           icon: <DiamondIcon fontSize="small" />,
                           label: "First",
+                          value: "FIRST",
                         },
                       };
                       const selected = options[value as keyof typeof options];
@@ -323,26 +342,45 @@ const Header = () => {
                             gap: 1,
                           }}
                         >
-                          {selected.icon} {selected.label}
+                          {selected?.icon} {selected?.label}
                         </Box>
                       );
                     }}
                   >
-                    <MenuItem value="economy">
-                      <AirlineSeatReclineNormalIcon
-                        fontSize="small"
-                        sx={{ mr: 1 }}
-                      />{" "}
-                      Economy
-                    </MenuItem>
-                    <MenuItem value="business">
-                      <BusinessCenterIcon fontSize="small" sx={{ mr: 1 }} />{" "}
-                      Business
-                    </MenuItem>
-                    <MenuItem value="first">
-                      <DiamondIcon fontSize="small" sx={{ mr: 1 }} /> First
-                      Class
-                    </MenuItem>
+                    {[
+                      {
+                        id: 1,
+                        value: "ECONOMY",
+                        label: "Economy",
+                        icon: (
+                          <AirlineSeatReclineNormalIcon
+                            fontSize="small"
+                            sx={{ mr: 1 }}
+                          />
+                        ),
+                      },
+                      {
+                        id: 2,
+                        value: "BUSINESS",
+                        label: "Business",
+                        icon: (
+                          <BusinessCenterIcon fontSize="small" sx={{ mr: 1 }} />
+                        ),
+                      },
+                      {
+                        id: 3,
+                        value: "FIRST",
+                        label: "First",
+                        icon: (
+                          <BusinessCenterIcon fontSize="small" sx={{ mr: 1 }} />
+                        ),
+                      },
+                    ].map((option) => (
+                      <MenuItem key={option.id} value={option.value}>
+                        {option.icon}
+                        {option.label}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 relative">

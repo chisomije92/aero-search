@@ -1,6 +1,5 @@
 import "server-only";
 import { amadeusAxios } from "./axios";
-import { AMADEUS_URLS } from "@/src/constants/amadeusUrls";
 
 let cachedToken: {
   accessToken: string;
@@ -18,11 +17,15 @@ export async function getAmadeusToken() {
     client_secret: process.env.AMADEUS_API_SECRET!,
   });
 
-  const { data } = await amadeusAxios.post(AMADEUS_URLS.auth, params, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+  const { data } = await amadeusAxios.post(
+    "/v1/security/oauth2/token",
+    params,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     },
-  });
+  );
 
   cachedToken = {
     accessToken: data.access_token,

@@ -3,6 +3,7 @@ import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { useQueryParams } from "./useQueryParams";
 import { toast } from "mui-sonner";
+import { useGetLocations } from "./useGetLocations";
 
 const airports = [
   { label: "New York (JFK)", code: "JFK" },
@@ -32,7 +33,7 @@ const DEFAULT_HEADER = {
   children: 0,
   infantsLap: 0,
   infantsSeat: 0,
-  travelClass: "economy",
+  travelClass: "ECONOMY",
 };
 
 export const useHeader = () => {
@@ -61,6 +62,9 @@ export const useHeader = () => {
     return DEFAULT_HEADER.destination;
   });
 
+  const { data: originLocations } = useGetLocations(origin?.code);
+  const { data: destinationLocations } = useGetLocations();
+  console.log("originLocations", originLocations);
   const [startDate, setStartDateState] = useState<Dayjs | null>(() => {
     const startDateStr = getQueryParam("startDate");
     if (startDateStr) {
@@ -120,7 +124,7 @@ export const useHeader = () => {
       setOriginState(value);
       // setQueryParam("origin", value?.code || null);
     },
-    [setQueryParam],
+    [],
   );
 
   const setDestination = useCallback(
@@ -128,7 +132,7 @@ export const useHeader = () => {
       setDestinationState(value);
       // setQueryParam("destination", value?.code || null);
     },
-    [setQueryParam],
+    [],
   );
 
   const setStartDate = useCallback((value: Dayjs | null) => {

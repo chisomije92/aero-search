@@ -16,6 +16,8 @@ export async function amadeusGet<T>(
       },
     });
 
+    console.log("AMADEUS GET", data);
+
     return data;
   } catch (err) {
     throw err;
