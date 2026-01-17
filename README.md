@@ -35,7 +35,7 @@ A modern, elegant flight search and booking platform built with Next.js, React, 
 
 ### Frontend
 
-- **Next.js 14+** - React framework with App Router
+- **Next.js 16+** - React framework with App Router
 - **React 18+** - UI library
 - **TypeScript** - Type-safe development
 - **Material-UI (MUI)** - Component library
@@ -80,8 +80,9 @@ npm install
    Create a `.env.local` file in the root directory:
 
 ```env
-NEXT_PUBLIC_AMADEUS_CLIENT_ID=your_amadeus_client_id
-NEXT_PUBLIC_AMADEUS_CLIENT_SECRET=your_amadeus_client_secret
+AMADEUS_API_KEY_ID=your_amadeus_client_id
+AMADEUS_API_SECRET=your_amadeus_client_secret
+AMADEUS_BASE_UR=amadeus_base_url
 ```
 
 4. **Run the development server**
@@ -181,7 +182,7 @@ j-flight/
 │   │   ├── layout/             # Layout components
 │   │   └── ui/                 # Reusable UI components
 │   ├── hooks/                  # Custom React hooks
-│   │   ├── useHeader.tsx       # Header state management
+│   │   ├── useHeroAction.tsx   # Hero state management
 │   │   ├── useFilters.tsx      # Filter state management
 │   │   ├── useQueryParams.tsx  # URL query parameter management
 │   │   └── ...
