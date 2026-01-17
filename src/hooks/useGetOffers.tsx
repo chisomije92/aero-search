@@ -31,7 +31,6 @@ export const useGetOffers = () => {
     destinationLocationCode: destination,
     departureDate: getQueryParam("startDate"),
     returnDate: getQueryParam("endDate"),
-    adults: getQueryParam("adults"),
   };
 
   const clientFilters = {
@@ -57,7 +56,10 @@ export const useGetOffers = () => {
   const queryString = toQueryString(paramsObj);
 
   const query = useQuery({
-    queryFn: async () => await getOffers(cleanRecord(paramsObj)),
+    queryFn: async () =>
+      await getOffers(
+        cleanRecord({ ...paramsObj, adults: getQueryParam("adults") }),
+      ),
     queryKey: [...QUERY_KEYS.getOffersKey(queryString)],
     enabled: !!origin && !!destination,
     select: (response: IAmadeusFlightOfferResponse) => {

@@ -142,12 +142,25 @@ export const useHeroActions = () => {
   }, []);
 
   const setStartDate = useCallback((value: Dayjs | null) => {
+    if (value) {
+      const today = dayjs().startOf("day");
+      if (value.isBefore(today)) {
+        toast.error("Start date cannot be in the past");
+        return;
+      }
+    }
     setStartDateState(value);
   }, []);
 
   const setEndDate = useCallback((value: Dayjs | null) => {
+    if (value && startDate) {
+      if (value.isBefore(startDate)) {
+        toast.error("End date must be after start date");
+        return;
+      }
+    }
     setEndDateState(value);
-  }, []);
+  }, [startDate]);
 
   const setTripType = useCallback(
     (value: string) => {
@@ -429,6 +442,7 @@ export const useHeroActions = () => {
       handleChangeDestination,
       handleChangeOriginInput,
       handleChangeDestinationInput,
+      startDate,
     ],
   );
 };
