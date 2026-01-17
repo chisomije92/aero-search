@@ -23,7 +23,7 @@ export function getCalendarDays(month: dayjs.Dayjs) {
 }
 
 export function cleanRecord(
-  obj: Record<string, string | null | undefined>,
+  obj: Record<string, string | null | undefined | number | boolean>,
 ): Record<string, string> {
   const entries = Object.entries(obj).filter(
     (entry): entry is [string, string] =>

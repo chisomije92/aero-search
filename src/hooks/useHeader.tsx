@@ -11,24 +11,6 @@ import {
   AutocompleteInputChangeReason,
 } from "@mui/material";
 
-const airports = [
-  { label: "New York (JFK)", code: "JFK" },
-  { label: "Los Angeles (LAX)", code: "LAX" },
-  { label: "London (LHR)", code: "LHR" },
-  { label: "Paris (CDG)", code: "CDG" },
-  { label: "Tokyo (NRT)", code: "NRT" },
-  { label: "Dubai (DXB)", code: "DXB" },
-  { label: "Singapore (SIN)", code: "SIN" },
-  { label: "Hong Kong (HKG)", code: "HKG" },
-  { label: "Chicago (ORD)", code: "ORD" },
-  { label: "San Francisco (SFO)", code: "SFO" },
-  { label: "Miami (MIA)", code: "MIA" },
-  { label: "Toronto (YYZ)", code: "YYZ" },
-  { label: "Sydney (SYD)", code: "SYD" },
-  { label: "Frankfurt (FRA)", code: "FRA" },
-  { label: "Amsterdam (AMS)", code: "AMS" },
-];
-
 const DEFAULT_HEADER = {
   origin: null as ILocation | null,
   destination: null as ILocation | null,
@@ -46,11 +28,12 @@ export const useHeader = () => {
   const { getQueryParam, setMultipleQueryParams, setQueryParam } =
     useQueryParams();
 
-  // const { originSearchInput, setOriginSearchInput } = useSearch("");
-  // const [destinationSearchInput, setDestinationSearchInput] = useState("");
-
-  const [originSearchInput, setOriginSearchInput] = useState("");
-  const [destinationSearchInput, setDestinationSearchInput] = useState("");
+  const [originSearchInput, setOriginSearchInput] = useState(
+    getQueryParam("originName") || "",
+  );
+  const [destinationSearchInput, setDestinationSearchInput] = useState(
+    getQueryParam("destinationName") || "",
+  );
 
   const debouncedOriginSearch = useDebounce(originSearchInput, 300);
   const debouncedDestinationSearch = useDebounce(destinationSearchInput, 300);
@@ -216,7 +199,7 @@ export const useHeader = () => {
     [setQueryParam],
   );
 
-  const totalPassengers = adults + children + infantsLap + infantsSeat;
+  const totalPassengers = adults + children + infantsSeat;
   const passengersOpen = Boolean(passengersAnchor);
 
   const handleSwapLocations = useCallback(() => {
@@ -230,24 +213,40 @@ export const useHeader = () => {
     const params: Record<string, string | null> = {
       origin: origin?.iataCode || null,
       destination: destination?.iataCode || null,
+      originName: originSearchInput || null,
+      destinationName: destinationSearchInput || null,
       startDate: startDate ? startDate.format("YYYY-MM-DD") : null,
       endDate: endDate ? endDate.format("YYYY-MM-DD") : null,
       tripType,
       adults: adults.toString(),
       children: children.toString(),
-      infantsLap: infantsLap.toString(),
+      // infantsLap: infantsLap.toString(),
       infantsSeat: infantsSeat.toString(),
       travelClass,
     };
 
-    if (!params?.origin) {
+    if (!params?.origin && !originSearchInput) {
       toast.warning("Please select an origin airport.");
       return;
+    } else {
+      params.origin =
+        origin?.iataCode ||
+        getQueryParam("origin") ||
+        originLocations.find((loc) => loc.name === originSearchInput)
+          ?.iataCode ||
+        null;
     }
 
-    if (!params?.destination) {
+    if (!params?.destination && !destinationSearchInput) {
       toast.warning("Please select a destination airport.");
       return;
+    } else {
+      params.destination =
+        destination?.iataCode ||
+        getQueryParam("destination") ||
+        destinationLocations.find((loc) => loc.name === destinationSearchInput)
+          ?.iataCode ||
+        null;
     }
 
     if (!params?.startDate) {
@@ -255,7 +254,7 @@ export const useHeader = () => {
       return;
     }
 
-    if (!params?.endDate) {
+    if (tripType === "roundtrip" && !params?.endDate) {
       toast.warning("Please select an end date.");
       return;
     }
@@ -269,9 +268,14 @@ export const useHeader = () => {
     tripType,
     adults,
     children,
-    infantsLap,
+    // infantsLap,
     infantsSeat,
     travelClass,
+    originSearchInput,
+    destinationSearchInput,
+    originLocations,
+    destinationLocations,
+    getQueryParam,
     setMultipleQueryParams,
   ]);
   const handleChangeOrigin = useCallback(

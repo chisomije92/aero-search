@@ -15,12 +15,12 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useFilters } from "@/src/hooks/useFilters";
+import { useGetAirlines } from "@/src/hooks/useGetAirlines";
 
-interface FiltersProps {
-  airlines: string[];
-}
+const Filters = () => {
+  const { data: airlinesData } = useGetAirlines();
+  const airlines = airlinesData?.data || [];
 
-const Filters = ({ airlines }: FiltersProps) => {
   const {
     selectedAirlines,
     priceRange,
@@ -70,8 +70,7 @@ const Filters = ({ airlines }: FiltersProps) => {
         Reset Filters
       </Button>
 
-      {/* Airlines */}
-      <div className="mb-6">
+      <div className="mb-6 max-h-[40vh] overflow-y-auto">
         <div
           className="flex items-center justify-between cursor-pointer mb-3"
           onClick={() => setAirlinesOpen(!airlinesOpen)}
@@ -86,14 +85,14 @@ const Filters = ({ airlines }: FiltersProps) => {
           )}
         </div>
         <Collapse in={airlinesOpen}>
-          <FormGroup>
+          <FormGroup className="">
             {airlines.map((airline) => (
               <FormControlLabel
-                key={airline}
+                key={airline?.iataCode}
                 control={
                   <Checkbox
-                    checked={selectedAirlines.includes(airline)}
-                    onChange={() => handleAirlineToggle(airline)}
+                    checked={selectedAirlines.includes(airline?.iataCode)}
+                    onChange={() => handleAirlineToggle(airline?.iataCode)}
                     size="small"
                     sx={{
                       "&.Mui-checked": { color: "#6366f1" },
@@ -105,7 +104,9 @@ const Filters = ({ airlines }: FiltersProps) => {
                 }
                 label={
                   <span className="text-sm text-gray-700">
-                    {airline}
+                    {airline?.commonName ??
+                      airline?.businessName ??
+                      airline?.iataCode}
                   </span>
                 }
               />
@@ -132,12 +133,10 @@ const Filters = ({ airlines }: FiltersProps) => {
         <Collapse in={priceOpen}>
           <Slider
             value={priceRange}
-            onChange={(_, newValue) =>
-              handlePriceChange(newValue as number[])
-            }
+            onChange={(_, newValue) => handlePriceChange(newValue as number[])}
             valueLabelDisplay="auto"
             min={0}
-            max={500}
+            max={1000}
             valueLabelFormat={(value) => `$${value}`}
             sx={{
               color: "#6366f1",
@@ -150,12 +149,12 @@ const Filters = ({ airlines }: FiltersProps) => {
           />
           <div className="flex justify-between mt-3">
             <Chip
-              label={`$${priceRange[0]}`}
+              label={`${priceRange[0]}`}
               size="small"
               sx={{ bgcolor: "#f3f4f6", fontWeight: 600 }}
             />
             <Chip
-              label={`$${priceRange[1]}`}
+              label={`${priceRange[1]}`}
               size="small"
               sx={{ bgcolor: "#f3f4f6", fontWeight: 600 }}
             />
@@ -182,9 +181,7 @@ const Filters = ({ airlines }: FiltersProps) => {
           <FormControl fullWidth size="small">
             <Select
               value={maxStops}
-              onChange={(e) =>
-                handleMaxStopsChange(e.target.value as number)
-              }
+              onChange={(e) => handleMaxStopsChange(e.target.value as number)}
               sx={{ borderRadius: 2 }}
             >
               <MenuItem value={0}>Non-stop</MenuItem>
@@ -316,7 +313,7 @@ const Filters = ({ airlines }: FiltersProps) => {
             }
             valueLabelDisplay="auto"
             min={1}
-            max={24}
+            max={48}
             valueLabelFormat={(value) => `${value}h`}
             sx={{
               color: "#6366f1",

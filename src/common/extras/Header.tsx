@@ -22,7 +22,6 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import PersonIcon from "@mui/icons-material/Person";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
-import PublicIcon from "@mui/icons-material/Public";
 import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatReclineNormal";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import DiamondIcon from "@mui/icons-material/Diamond";
@@ -53,8 +52,8 @@ const Header = () => {
     setAdults,
     children,
     setChildren,
-    infantsLap,
-    setInfantsLap,
+    // infantsLap,
+    // setInfantsLap,
     infantsSeat,
     setInfantsSeat,
     travelClass,
@@ -139,10 +138,10 @@ const Header = () => {
                           icon: <TrendingFlatIcon fontSize="small" />,
                           label: "One Way",
                         },
-                        multicity: {
-                          icon: <PublicIcon fontSize="small" />,
-                          label: "Multi-City",
-                        },
+                        // multicity: {
+                        //   icon: <PublicIcon fontSize="small" />,
+                        //   label: "Multi-City",
+                        // },
                       };
                       const selected = options[value as keyof typeof options];
                       return (
@@ -173,12 +172,12 @@ const Header = () => {
                           <TrendingFlatIcon fontSize="small" sx={{ mr: 1 }} />
                         ),
                       },
-                      {
-                        id: 3,
-                        value: "multicity",
-                        label: "Multi-City",
-                        icon: <PublicIcon fontSize="small" sx={{ mr: 1 }} />,
-                      },
+                      // {
+                      //   id: 3,
+                      //   value: "multicity",
+                      //   label: "Multi-City",
+                      //   icon: <PublicIcon fontSize="small" sx={{ mr: 1 }} />,
+                      // },
                     ].map((option) => (
                       <MenuItem key={option.id} value={option.value}>
                         {option.icon} {option.label}
@@ -231,12 +230,12 @@ const Header = () => {
                             setter: setChildren,
                             min: 0,
                           },
-                          {
-                            label: "Infants (on lap)",
-                            value: infantsLap,
-                            setter: setInfantsLap,
-                            min: 0,
-                          },
+                          // {
+                          //   label: "Infants (on lap)",
+                          //   value: infantsLap,
+                          //   setter: setInfantsLap,
+                          //   min: 0,
+                          // },
                           {
                             label: "Infants (on seat)",
                             value: infantsSeat,

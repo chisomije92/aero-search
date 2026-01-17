@@ -1,3 +1,5 @@
+import { IMeta } from "./meta";
+
 export interface ILocation {
   type: string;
   subType: string;
@@ -29,14 +31,7 @@ export interface ILocation {
   };
 }
 
-export interface ILocationMeta {
-  count: number;
-  links: {
-    self: string;
-  };
-}
-
 export interface ILocationResponse {
   data: ILocation[];
-  meta: ILocationMeta;
+  meta: IMeta;
 }

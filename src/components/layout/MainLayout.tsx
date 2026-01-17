@@ -11,6 +11,7 @@ import DrawerLayout from "./DrawerLayout";
 import Footer from "@/src/common/extras/Footer";
 import { useIsMounted } from "@/src/hooks/useIsMounted";
 import { Toaster } from "mui-sonner";
+import { NoSSR } from "@/src/providers/NoSSR";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -20,21 +21,25 @@ interface MainLayoutProps {
 const MainLayout = ({ children, className }: MainLayoutProps) => {
   useIsMounted();
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <ModalProvider>
-        <DrawerProvider>
-          <ModalLayout>
-            <DrawerLayout>
-              <>
-                <div className={cn("min-h-screen ", className)}>{children}</div>
-              </>
-              <Footer />
-            </DrawerLayout>
-          </ModalLayout>
-        </DrawerProvider>
-      </ModalProvider>
-      <Toaster />
-    </LocalizationProvider>
+    <NoSSR>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ModalProvider>
+          <DrawerProvider>
+            <ModalLayout>
+              <DrawerLayout>
+                <>
+                  <div className={cn("min-h-screen ", className)}>
+                    {children}
+                  </div>
+                </>
+                <Footer />
+              </DrawerLayout>
+            </ModalLayout>
+          </DrawerProvider>
+        </ModalProvider>
+        <Toaster />
+      </LocalizationProvider>
+    </NoSSR>
   );
 };
 

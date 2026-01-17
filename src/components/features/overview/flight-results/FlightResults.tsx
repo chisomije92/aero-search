@@ -6,13 +6,9 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import Filters from "@/src/common/extras/Filters";
 import PriceTrends from "../price-trends/PriceTrends";
-import Flights from "../flights/Flights";
+import FlightsDataGrid from "../flights/FlightsDataGrid";
 
 const FlightResults = () => {
-  //   const [travelClass, setTravelClass] = useState("economy");
-
-  const airlines = ["Delta", "United", "American", "Southwest", "JetBlue"];
-
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -28,13 +24,13 @@ const FlightResults = () => {
                   <h3 className="text-xl font-bold">Filters</h3>
                 </div>
               </div>
-              <Filters airlines={airlines} />
+              <Filters />
             </Paper>
           </aside>
 
           <main className="flex-1 min-w-0 flex gap-3 flex-col">
             <PriceTrends />
-            <Flights />
+            <FlightsDataGrid />
           </main>
         </div>
       </div>

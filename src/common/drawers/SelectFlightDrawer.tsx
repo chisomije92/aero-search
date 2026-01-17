@@ -11,9 +11,19 @@ import FlightLandIcon from "@mui/icons-material/FlightLand";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useDrawer } from "@/src/hooks/useDrawer";
+import { INormalizedFlightOffer } from "@/src/types/offers";
 
 const SelectFlightDrawer = () => {
-  const { close, open, openState } = useDrawer();
+  const { close, openState } = useDrawer();
+  const drawerData = openState.data as INormalizedFlightOffer;
+
+  if (!drawerData) {
+    return null;
+  }
+
+  const { outbound, return: returnFlight, currency, price, isRoundTrip } =
+    drawerData;
+
   return (
     <Drawer anchor="right" open={openState.isOpen} onClose={() => close()}>
       <Box sx={{ width: { xs: "100vw", sm: 400 }, p: 3 }}>
@@ -33,12 +43,13 @@ const SelectFlightDrawer = () => {
           </IconButton>
         </Box>
 
+        {/* Outbound Flight */}
         <Box sx={{ mb: 3, p: 2, bgcolor: "#f9fafb", borderRadius: 2 }}>
           <Typography fontWeight={700} fontSize={18} color="#1f2937" mb={1}>
-            Lufthansa
+            {outbound.airline}
           </Typography>
           <Typography variant="body2" color="#6b7280">
-            Flight LH408
+            Flight {outbound.flightNumber}
           </Typography>
         </Box>
 
@@ -48,24 +59,24 @@ const SelectFlightDrawer = () => {
             <Box>
               <Typography fontWeight={600}>Departure</Typography>
               <Typography variant="h6" fontWeight={700}>
-                08:40
+                {outbound.departureTime}
               </Typography>
               <Typography variant="body2" color="#6b7280">
-                JFK
+                {outbound.origin}
               </Typography>
             </Box>
           </Box>
 
           <Box sx={{ pl: 2.5, py: 1, borderLeft: "2px dashed #d1d5db" }}>
             <Typography variant="body2" color="#6b7280">
-              Duration: 7h 15m
+              Duration: {outbound.duration}
             </Typography>
             <Typography
               variant="body2"
-              //   color={stops === "Direct" ? "#10b981" : "#f59e0b"}
+              color={outbound.stops === "Direct" ? "#10b981" : "#f59e0b"}
               fontWeight={600}
             >
-              {/* {stops} */}1 Stop
+              {outbound.stops}
             </Typography>
           </Box>
 
@@ -74,33 +85,84 @@ const SelectFlightDrawer = () => {
             <Box>
               <Typography fontWeight={600}>Arrival</Typography>
               <Typography variant="h6" fontWeight={700}>
-                15:55
+                {outbound.arrivalTime}
               </Typography>
               <Typography variant="body2" color="#6b7280">
-                LHR
+                {outbound.destination}
               </Typography>
             </Box>
           </Box>
         </Box>
 
+        {/* Return Flight (if round trip) */}
+        {isRoundTrip && returnFlight && (
+          <>
+            <Divider sx={{ my: 3 }} />
+
+            <Box sx={{ mb: 3, p: 2, bgcolor: "#f9fafb", borderRadius: 2 }}>
+              <Typography fontWeight={700} fontSize={18} color="#1f2937" mb={1}>
+                {returnFlight.airline}
+              </Typography>
+              <Typography variant="body2" color="#6b7280">
+                Flight {returnFlight.flightNumber}
+              </Typography>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                <FlightTakeoffIcon sx={{ color: "#6366f1" }} />
+                <Box>
+                  <Typography fontWeight={600}>Departure</Typography>
+                  <Typography variant="h6" fontWeight={700}>
+                    {returnFlight.departureTime}
+                  </Typography>
+                  <Typography variant="body2" color="#6b7280">
+                    {returnFlight.origin}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ pl: 2.5, py: 1, borderLeft: "2px dashed #d1d5db" }}>
+                <Typography variant="body2" color="#6b7280">
+                  Duration: {returnFlight.duration}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color={
+                    returnFlight.stops === "Direct" ? "#10b981" : "#f59e0b"
+                  }
+                  fontWeight={600}
+                >
+                  {returnFlight.stops}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+                <FlightLandIcon sx={{ color: "#ec4899" }} />
+                <Box>
+                  <Typography fontWeight={600}>Arrival</Typography>
+                  <Typography variant="h6" fontWeight={700}>
+                    {returnFlight.arrivalTime}
+                  </Typography>
+                  <Typography variant="body2" color="#6b7280">
+                    {returnFlight.destination}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </>
+        )}
+
         <Divider sx={{ my: 3 }} />
 
+        {/* Price Summary */}
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography color="#6b7280">Base Fare</Typography>
-            <Typography fontWeight={600}>$548</Typography>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography color="#6b7280">Taxes & Fees</Typography>
-            <Typography fontWeight={600}>$52</Typography>
-          </Box>
-          <Divider sx={{ my: 2 }} />
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography fontWeight={700} fontSize={18}>
-              Total
+              Total Price
             </Typography>
             <Typography fontWeight={700} fontSize={18} color="#6366f1">
-              $548
+              {currency} {price}
             </Typography>
           </Box>
         </Box>

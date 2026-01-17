@@ -3,6 +3,21 @@ import { getOffers } from "../services/aeroServices";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { useQueryParams } from "./useQueryParams";
 import { cleanRecord, toQueryString } from "../lib/utils";
+import {
+  IAmadeusFlightOfferResponse,
+  TTravelClass,
+  TTripType,
+} from "../types/offers";
+import { normalizeFlightOffer } from "../lib/normalization";
+import { filterFlights } from "../lib/filters";
+import { useMemo } from "react";
+import {
+  buildDateRange,
+  buildPastDayOffsets,
+  buildPriceProfile,
+  buildSpacedDayOffsets,
+  priceForDay,
+} from "../lib/trends";
 
 export const useGetOffers = () => {
   const { getQueryParam } = useQueryParams();
@@ -10,25 +25,129 @@ export const useGetOffers = () => {
   const destination = getQueryParam("destination");
   const paramsObj = {
     originLocationCode: origin,
-    destinationIataCode: destination,
+    destinationLocationCode: destination,
     departureDate: getQueryParam("startDate"),
     returnDate: getQueryParam("endDate"),
     adults: getQueryParam("adults"),
-    max: "20",
-    travelClass: getQueryParam("travelClass"),
-    children: getQueryParam("children"),
-    infants: getQueryParam("infants"),
-    departureTime: getQueryParam("departureTime"),
-    returnTime: getQueryParam("arrivalTime"),
-    maxNumberOfStops: getQueryParam("maxStops"),
+  };
+
+  const clientFilters = {
+    departureDate: getQueryParam("startDate") || "",
+    returnDate: getQueryParam("endDate") || "",
+    departureTime: getQueryParam("departureTime") || "",
+    returnTime: getQueryParam("arrivalTime") || "",
+    maxNumberOfStops: getQueryParam("maxStops")
+      ? Number(getQueryParam("maxStops"))
+      : undefined,
+    maxDuration: getQueryParam("maxDuration") || "",
     priceRange: getQueryParam("priceRange")?.replace(",", "-"),
-    includedAirlineCodes: getQueryParam("airlines"),
-    nonStop: "",
+    includedAirlineCodes: getQueryParam("airlines")?.split(","),
+    nonStop: getQueryParam("nonStop") === "true",
+    travelClass: getQueryParam("travelClass") as TTravelClass,
+    bookableSeats:
+      Number(getQueryParam("adults")) +
+      Number(getQueryParam("children")) +
+      Number(getQueryParam("infants")) +
+      Number(getQueryParam("infantsSeat")),
+    tripType:
+      getQueryParam("tripType") === "roundtrip"
+        ? "ROUND_TRIP"
+        : ("ONE_WAY" as TTripType),
   };
   const queryString = toQueryString(paramsObj);
-  return useQuery({
+
+  const query = useQuery({
     queryFn: async () => await getOffers(cleanRecord(paramsObj)),
     queryKey: [...QUERY_KEYS.getOffersKey(queryString)],
     enabled: !!origin && !!destination,
+    select: (response: IAmadeusFlightOfferResponse) => {
+      const normalized = response.data?.map(normalizeFlightOffer) ?? [];
+
+      const offersAirlines = new Set<string>(
+        normalized.map((offer) => offer.outbound.airline),
+      );
+      return {
+        normalizeFlightOffers: filterFlights(normalized, clientFilters),
+        normalizedDataOffers: normalized,
+        airlinesCarriers: Array.from(offersAirlines).join(","),
+        ...response,
+      };
+    },
   });
+
+  // const priceTrendData = useMemo(() => {
+  //   const map = new Map<string, { price: number; currency: string }>();
+
+  //   query.data?.normalizedDataOffers.forEach((flight) => {
+  //     const date = flight.outbound.departureDate.split("T")[0];
+
+  //     const existing = map.get(date);
+
+  //     if (!existing || flight.price < existing.price) {
+  //       map.set(date, {
+  //         price: flight.price,
+  //         currency: flight.currency,
+  //       });
+  //     }
+  //   });
+
+  //   return Array.from(map.entries())
+  //     .map(([date, value]) => ({
+  //       date,
+  //       price: value.price,
+  //       currency: value.currency,
+  //     }))
+  //     .sort((a, b) => a.date.localeCompare(b.date));
+  // }, [query.data?.normalizedDataOffers]);
+
+  const simulatedTrendData = useMemo(() => {
+    if (!query.data?.normalizeFlightOffers.length) return [];
+
+    const currency = query.data?.normalizeFlightOffers[0].currency;
+    const profile = buildPriceProfile(query.data?.normalizeFlightOffers);
+    const offsets = buildSpacedDayOffsets(10, 4);
+
+    return offsets.map((daysAgo, index) => ({
+      date: daysAgo,
+      label: daysAgo === 0 ? "Today" : `${daysAgo}d ago`,
+      price: priceForDay(profile, index),
+      currency,
+    }));
+  }, [query.data?.normalizeFlightOffers]);
+
+  const priceStats = useMemo(() => {
+    if (!simulatedTrendData.length) return null;
+
+    const prices = simulatedTrendData.map((d) => d.price);
+    const currency = simulatedTrendData[0].currency;
+
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const latest = prices[prices.length - 1];
+    const average = prices.reduce((a, b) => a + b, 0) / prices.length;
+
+    let status: "cheap" | "typical" | "expensive";
+
+    if (latest < average * 0.9) status = "cheap";
+    else if (latest > average * 1.1) status = "expensive";
+    else status = "typical";
+
+    return {
+      min,
+      max,
+      latest,
+      average,
+      currency,
+      status,
+    };
+  }, [simulatedTrendData]);
+
+  return {
+    ...query,
+    normalizedDataOffers: query.data?.normalizeFlightOffers || [],
+    // priceTrendData: priceTrendData || [],
+    simulatedTrendData: simulatedTrendData || [],
+    priceStats: priceStats || null,
+    airlinesCarriers: query.data?.airlinesCarriers || "",
+  };
 };

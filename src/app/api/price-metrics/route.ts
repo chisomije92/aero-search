@@ -11,14 +11,12 @@ export async function GET(req: Request) {
       originLocationCode: sp.get("origin")!,
       destinationIataCode: sp.get("destination")!,
       departureDate: sp.get("month")!,
-      oneWay: sp.get("oneWay")!,
-      travelClass: sp.get("travelClass")!,
       currencyCode: sp.get("currency")!,
     });
 
     return NextResponse.json(data);
-   } catch (error) {
-     const customError = error as IError;
-     return customErrorHelper(customError);
-   }
+  } catch (error) {
+    const customError = error as IError;
+    return customErrorHelper(customError);
+  }
 }
