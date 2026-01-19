@@ -152,15 +152,18 @@ export const useHeroActions = () => {
     setStartDateState(value);
   }, []);
 
-  const setEndDate = useCallback((value: Dayjs | null) => {
-    if (value && startDate) {
-      if (value.isBefore(startDate)) {
-        toast.error("End date must be after start date");
-        return;
+  const setEndDate = useCallback(
+    (value: Dayjs | null) => {
+      if (value && startDate) {
+        if (value.isBefore(startDate)) {
+          toast.error("End date must be after start date");
+          return;
+        }
       }
-    }
-    setEndDateState(value);
-  }, [startDate]);
+      setEndDateState(value);
+    },
+    [startDate],
+  );
 
   const setTripType = useCallback(
     (value: string) => {
@@ -391,6 +394,7 @@ export const useHeroActions = () => {
       handleChangeDestination,
       handleChangeOriginInput,
       handleChangeDestinationInput,
+      getQueryParam,
       loadingLocations: isSearchingOrigins || isSearchingDestinations,
 
       hasNotTypedEnough:
@@ -407,7 +411,6 @@ export const useHeroActions = () => {
       destinationLocations,
       originSearchInput,
       destinationSearchInput,
-      startDate,
       endDate,
       tripType,
       adults,
@@ -424,6 +427,7 @@ export const useHeroActions = () => {
       isFetchingDestinations,
       isFetchingOrigins,
       isSearching,
+      getQueryParam,
       setAdults,
       setChildren,
       setInfantsLap,

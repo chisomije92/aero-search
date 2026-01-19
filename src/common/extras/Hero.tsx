@@ -9,7 +9,6 @@ import {
   Paper,
   IconButton,
   Popover,
-  Fab,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
@@ -27,15 +26,14 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import DiamondIcon from "@mui/icons-material/Diamond";
 
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import TuneIcon from "@mui/icons-material/Tune";
-import { useDrawer } from "@/src/hooks/useDrawer";
 import Navbar from "./Navbar";
 import { LocationAutocomplete } from "./LocationAutocomplete";
 import { useHeroActions } from "@/src/hooks/useHeroActions";
 import { AnimatedSection } from "@/src/components/ui/AnimationSection";
+import React from "react";
+import FiltersMobile from "./FiltersMobile";
 
 const Hero = () => {
-  const { open: openDrawer } = useDrawer();
   const {
     origin,
     destination,
@@ -72,7 +70,6 @@ const Hero = () => {
     handleChangeOriginInput,
     handleChangeDestinationInput,
   } = useHeroActions();
-
   const notEnoughTextAndLoadingText = hasNotTypedEnough
     ? "Type at least 1 characters"
     : isSearching
@@ -538,11 +535,6 @@ const Hero = () => {
                 <Button
                   variant="contained"
                   size="large"
-                  // disabled={
-                  //   origin?.code === "" ||
-                  //   destination?.code === "" ||
-                  //   origin?.code === destination?.code
-                  // }
                   startIcon={<SearchIcon />}
                   onClick={handleExplore}
                   sx={{
@@ -579,25 +571,8 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <Fab
-        color="primary"
-        onClick={() => openDrawer("filter", true)}
-        sx={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          display: { xs: "flex", lg: "none" },
-          background:
-            "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)",
-          "&:hover": {
-            background:
-              "linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%)",
-          },
-          zIndex: 1000,
-        }}
-      >
-        <TuneIcon />
-      </Fab>
+
+      <FiltersMobile />
     </AnimatedSection>
   );
 };
