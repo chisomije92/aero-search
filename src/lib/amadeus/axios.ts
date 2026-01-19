@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const amadeusAxios = axios.create({
   baseURL: process.env.AMADEUS_BASE_URL,
-  timeout: 10_000,
+  timeout: 400_000,
 });
 
 amadeusAxios.interceptors.response.use(
